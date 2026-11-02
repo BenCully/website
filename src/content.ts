@@ -174,3 +174,6 @@ export const projects = [
     href: "https://github.com/BenCully/battleshipAI",
   },
 ] as const
+
+// Header menu, in this order. The work section still lists every project.
+export const menuProjects = projects.filter((project) => project.href === "/used-cars")

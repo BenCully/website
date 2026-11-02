@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react"
+import { Fragment, createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react"
 import { Link, NavLink, Route, Routes, useLocation } from "react-router"
 import { BlogIndex, BlogPost, NotFound } from "./Blog.tsx"
-import { experience, marks, projects, site } from "./content.ts"
+import { experience, marks, menuProjects, projects, site } from "./content.ts"
 import { frame } from "./frame.ts"
 import { usePageMeta } from "./page-meta.ts"
 
@@ -128,9 +128,149 @@ function ExternalLink({
   )
 }
 
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 12 12"
+      className={`size-2.5 shrink-0 transition-transform duration-200 motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
+    >
+      <path
+        d="M2.25 4.4 6 8.05 9.75 4.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="square"
+      />
+    </svg>
+  )
+}
+
+function ProjectsMenu() {
+  const location = useLocation()
+  const place = `${location.pathname}${location.hash}`
+  const [openPlace, setOpenPlace] = useState<string | null>(null)
+  if (openPlace !== null && openPlace !== place) setOpenPlace(null)
+  const open = openPlace === place
+  const setOpen = (next: boolean) => setOpenPlace(next ? place : null)
+  const rootRef = useRef<HTMLLIElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const itemRefs = useRef<Array<HTMLAnchorElement | null>>([])
+  const pendingFocus = useRef<number | null>(null)
+
+  useLayoutEffect(() => {
+    if (!open || pendingFocus.current === null) return
+    const index = pendingFocus.current
+    pendingFocus.current = null
+    itemRefs.current[index]?.focus()
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpenPlace(null)
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return
+      setOpenPlace(null)
+      buttonRef.current?.focus()
+    }
+
+    document.addEventListener("pointerdown", onPointerDown)
+    document.addEventListener("keydown", onKeyDown)
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown)
+      document.removeEventListener("keydown", onKeyDown)
+    }
+  }, [open])
+
+  if (menuProjects.length === 0) return null
+
+  const focusItem = (index: number) => {
+    const count = menuProjects.length
+    itemRefs.current[(index + count) % count]?.focus()
+  }
+
+  return (
+    <li
+      ref={rootRef}
+      className="flex items-center md:relative"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false)
+      }}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        className={`${navLinkClass} gap-1.5 data-[open]:text-mark data-[open]:after:scale-x-100`}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-controls="projects-menu"
+        data-open={open ? "" : undefined}
+        onClick={() => setOpen(!open)}
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return
+          event.preventDefault()
+          const index = event.key === "ArrowDown" ? 0 : menuProjects.length - 1
+          if (open) focusItem(index)
+          else {
+            pendingFocus.current = index
+            setOpen(true)
+          }
+        }}
+      >
+        Projects
+        <Chevron open={open} />
+      </button>
+      <ul
+        id="projects-menu"
+        role="menu"
+        aria-label="Projects"
+        hidden={!open}
+        className="absolute top-[calc(100%+4px)] left-0 z-30 m-0 w-max max-w-[calc(100vw-2rem)] min-w-56 list-none bg-paper p-1.5 text-ink shadow-[0_18px_40px_-18px_rgba(26,24,20,0.45)] max-md:right-4 max-md:left-4 max-md:w-auto max-md:max-w-none max-md:min-w-0"
+      >
+        {menuProjects.map((project, index) => (
+          <li key={project.href} role="none">
+            <a
+              ref={(node) => {
+                itemRefs.current[index] = node
+              }}
+              role="menuitem"
+              tabIndex={-1}
+              href={project.href}
+              className="flex min-h-11 items-center px-3 text-[0.95rem] text-ink no-underline hover:bg-mark focus-visible:bg-mark focus-visible:outline-pine"
+              onClick={() => setOpen(false)}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowDown") {
+                  event.preventDefault()
+                  focusItem(index + 1)
+                } else if (event.key === "ArrowUp") {
+                  event.preventDefault()
+                  focusItem(index - 1)
+                } else if (event.key === "Home") {
+                  event.preventDefault()
+                  focusItem(0)
+                } else if (event.key === "End") {
+                  event.preventDefault()
+                  focusItem(menuProjects.length - 1)
+                } else if (event.key === "Tab") {
+                  setOpen(false)
+                }
+              }}
+            >
+              {project.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </li>
+  )
+}
+
 function Header() {
   return (
-    <header className="border-b-4 border-mark bg-pine text-paper" id="top">
+    <header className="relative z-20 border-b-4 border-mark bg-pine text-paper" id="top">
       <div className={`${frame} flex min-h-[4.75rem] flex-wrap items-center gap-x-6 gap-y-1 max-md:py-3`}>
         <Link
           className="font-[580] tracking-[-0.03em] text-paper no-underline hover:text-mark"
@@ -138,16 +278,19 @@ function Header() {
         >
           {site.name}
         </Link>
-        <nav aria-label="Sections">
-          <ul className="flex list-none gap-1 p-0 max-md:-ml-3 max-md:w-full">
+        <nav aria-label="Sections" className="self-stretch max-md:w-full">
+          <ul className="flex h-full list-none flex-wrap items-stretch gap-1 p-0 max-md:-ml-3">
             {sections.map(([label, id]) => (
-              <li key={id}>
-                <Link className={navLinkClass} to={{ pathname: "/", hash: `#${id}` }}>
-                  {label}
-                </Link>
-              </li>
+              <Fragment key={id}>
+                <li className="flex items-center">
+                  <Link className={navLinkClass} to={{ pathname: "/", hash: `#${id}` }}>
+                    {label}
+                  </Link>
+                </li>
+                {id === "work" ? <ProjectsMenu /> : null}
+              </Fragment>
             ))}
-            <li>
+            <li className="flex items-center">
               <NavLink
                 className={({ isActive }) => `${navLinkClass}${isActive ? " text-mark" : ""}`}
                 to="/blog"
