@@ -109,6 +109,10 @@ jobs:
           aws s3 cp dist/index.html "s3://${S3_BUCKET}/index.html" \
             --cache-control "public,max-age=0,must-revalidate" \
             --content-type "text/html; charset=utf-8"
+          # Extensionless key. The REST origin will not serve home/index.html for /home.
+          aws s3 cp dist/home "s3://${S3_BUCKET}/home" \
+            --cache-control "public,max-age=0,must-revalidate" \
+            --content-type "text/html; charset=utf-8"
           aws s3 cp dist/robots.txt "s3://${S3_BUCKET}/robots.txt" \
             --cache-control "public,max-age=0,must-revalidate" \
             --content-type "text/plain; charset=utf-8"
