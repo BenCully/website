@@ -1,0 +1,126 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+
+      - name: Enable Yarn
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
+
+      - name: Upload site
+        uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: dist
+          retention-days: 7
+          if-no-files-found: error
+
+  deploy:
+    name: Deploy to S3 and CloudFront
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check pipeline configuration
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          CF_DISTRO_ID: ${{ vars.CF_DISTRO_ID }}
+          HAS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+          HAS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY != '' }}
+        run: |
+          set -euo pipefail
+          missing=0
+          if [ "$HAS_ACCESS_KEY" != "true" ]; then
+            echo "::error::Add Actions secret AWS_ACCESS_KEY_ID (Settings → Secrets and variables → Actions → Secrets)."
+            missing=1
+          fi
+          if [ "$HAS_SECRET_KEY" != "true" ]; then
+            echo "::error::Add Actions secret AWS_SECRET_ACCESS_KEY."
+            missing=1
+          fi
+          if [ -z "$AWS_REGION" ]; then
+            echo "::error::Add Actions variable AWS_REGION, for example us-east-1."
+            missing=1
+          fi
+          if [ -z "$S3_BUCKET" ]; then
+            echo "::error::Add Actions variable S3_BUCKET (the origin bucket name, without s3://)."
+            missing=1
+          fi
+          if [ -z "$CF_DISTRO_ID" ]; then
+            echo "::error::Add Actions variable CF_DISTRO_ID (the CloudFront distribution id)."
+            missing=1
+          fi
+          exit "$missing"
+
+      - name: Download site
+        uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: dist
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Publish to S3
+        env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws s3 sync dist/ "s3://${S3_BUCKET}" \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable"
+          aws s3 cp dist/index.html "s3://${S3_BUCKET}/index.html" \
+            --cache-control "public,max-age=0,must-revalidate" \
+            --content-type "text/html; charset=utf-8"
+          aws s3 cp dist/robots.txt "s3://${S3_BUCKET}/robots.txt" \
+            --cache-control "public,max-age=0,must-revalidate" \
+            --content-type "text/plain; charset=utf-8"
+          aws s3 cp dist/sitemap.xml "s3://${S3_BUCKET}/sitemap.xml" \
+            --cache-control "public,max-age=0,must-revalidate" \
+            --content-type "application/xml; charset=utf-8"
+
+      - name: Invalidate CloudFront
+        env:
+          CF_DISTRO_ID: ${{ vars.CF_DISTRO_ID }}
+        run: |
+          set -euo pipefail
+          aws cloudfront create-invalidation \
+            --distribution-id "$CF_DISTRO_ID" \
+            --paths "/*"
