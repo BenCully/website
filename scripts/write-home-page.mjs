@@ -1,4 +1,4 @@
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { posts, site } from "../src/content.ts"
 
@@ -26,12 +26,23 @@ for (const post of posts) {
   routes.push([file, file])
 }
 
+// The dashboard is its own document, not the React shell. Vite copies
+// public/used-cars.html to dist/used-cars.html. The S3 key is `used-cars`.
+const usedCarsFile = "used-cars.html"
+const hasUsedCars = existsSync(join(dist, usedCarsFile))
+if (hasUsedCars) routes.push([usedCarsFile, "used-cars"])
+
 writeFileSync(
   join(dist, "html-routes.txt"),
   `${routes.map(([source, key]) => `${source}\t${key}`).join("\n")}\n`,
 )
 
-const urls = [`${site.url}/`, `${site.url}/blog`, ...posts.map((post) => `${site.url}/blog/${post.slug}`)]
+const urls = [
+  `${site.url}/`,
+  ...(hasUsedCars ? [`${site.url}/used-cars`] : []),
+  `${site.url}/blog`,
+  ...posts.map((post) => `${site.url}/blog/${post.slug}`),
+]
 
 function xml(value) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")

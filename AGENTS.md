@@ -29,14 +29,14 @@ CI runs `yarn install --frozen-lockfile`, `yarn lint`, and `yarn build`. Update 
 - `src/App.tsx` is the shell: header, routes, footer. React Router serves `/` and `/home` as the home page, `/blog` as the post list, and `/blog/:slug` as a post. Home sections are in-page anchors (`#experience`, `#work`, `#about`, `#contact`).
 - `src/index.css` is the Tailwind entry. Brand colors and fonts live in the `@theme` block (`paper`, `ink`, `muted`, `line`, `pine`, `pine-mid`, `mark`).
 - `src/main.tsx` loads the self-hosted fonts, then the CSS and the app.
-- `public/` holds the favicon, `robots.txt`, and `sitemap.xml`. Those URLs use `https://bencully.com/`.
+- `public/` holds the favicon, `robots.txt`, `sitemap.xml`, and `used-cars.html`. Those URLs use `https://bencully.com/`. `used-cars.html` is the used-car dashboard, a separate document from the React app.
 - `index.html` holds the title, description, and canonical URL.
 
 Keep new UI on the existing type and color tokens. Prefer Tailwind utilities in the components. Put shared document styles in `@layer base` in `src/index.css`.
 
 ## Content
 
-Only describe work Ben has actually published. The current projects come from his public GitHub repositories. Do not invent employers, clients, or projects. Do not add a personal email address. GitHub (https://github.com/BenCully) and LinkedIn (https://www.linkedin.com/in/benjamin-cully-3bb773147/) are the contact paths.
+Only describe work Ben has actually published. The current projects are his public GitHub repositories and the used-car dashboard. Do not invent employers, clients, or projects. Do not add a personal email address. GitHub (https://github.com/BenCully) and LinkedIn (https://www.linkedin.com/in/benjamin-cully-3bb773147/) are the contact paths.
 
 ## Deploy
 
@@ -62,6 +62,8 @@ The bucket is the CloudFront origin. CloudFront uses the S3 REST endpoint, so th
 Hashed assets are cached for a year. The HTML routes in `html-routes.txt`, plus `robots.txt` and `sitemap.xml`, are uploaded again with `must-revalidate`, then CloudFront is invalidated.
 
 `/` and `/home` render the same page. A new post needs a `slug` in `src/content.ts`. The build emits its object. Do not add another path unless that script emits an object for it, or CloudFront is changed to serve `index.html` for unknown paths.
+
+`/used-cars` is the exception: it is `public/used-cars.html`, not a copy of the React shell. `scripts/write-home-page.mjs` lists that file in `dist/html-routes.txt` with the object key `used-cars`. The deploy excludes `used-cars.html` from the year-long cache and uploads the key `used-cars` as `text/html` with `must-revalidate`. A weekly agent may rewrite `public/used-cars.html` and push straight to `main`. New charts and sections belong inside that file. A separate `.js` or `.css` file with a stable name would be cached for a year. Do not point `/used-cars` at `index.html`.
 
 ## Checks
 

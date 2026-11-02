@@ -52,4 +52,6 @@ The bucket is the CloudFront origin. The distribution's default root object shou
 
 `/home` is the same page as `/`. `/blog` is the post list, and each post is `/blog/<slug>`. The build copies `index.html` to an extensionless object for every route, and the deploy uploads those keys as HTML so CloudFront can serve them from the S3 REST origin. The `/blog` key is uploaded from `dist/blog/index.html`.
 
+`/used-cars` is a separate page, `public/used-cars.html`. The deploy uploads it as the key `used-cars` with `must-revalidate`, so a weekly rewrite of that file shows up without a year-long browser cache.
+
 Hashed assets are cached for a year. HTML routes, `robots.txt`, and `sitemap.xml` are uploaded again with `must-revalidate`, then CloudFront is invalidated.

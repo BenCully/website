@@ -468,29 +468,40 @@ function ProjectLink({
 }) {
   const { ref, shown } = useInView<HTMLLIElement>()
 
+  const className =
+    "group grid grid-cols-[3.25rem_minmax(0,1fr)_auto] items-start gap-4 border-b border-line px-3 py-5 no-underline hover:bg-[#e5f0ea] focus-visible:bg-[#e5f0ea] max-md:grid-cols-[2.5rem_minmax(0,1fr)] max-md:gap-x-3 max-md:gap-y-2"
+  const body = (
+    <>
+      <span
+        className="pt-1.5 font-mono text-xs tracking-[0.08em] text-pine-mid"
+        aria-hidden="true"
+      >
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <span className="flex flex-col gap-1.5">
+        <span className="text-[1.35rem] tracking-[-0.03em] transition-transform duration-150 group-hover:translate-x-1 group-focus-visible:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
+          {project.name}
+        </span>
+        <span className="max-w-2xl text-muted">{project.summary}</span>
+      </span>
+      <span className="flex flex-col items-end gap-1 pt-1.5 font-mono text-xs tracking-[0.08em] text-muted max-md:col-start-2 max-md:flex-row max-md:items-center max-md:justify-start max-md:gap-3 max-md:pt-0">
+        <span>{project.language}</span>
+        <span>{project.year}</span>
+      </span>
+    </>
+  )
+
   return (
     <li ref={ref} className={revealClass(shown)}>
-      <ExternalLink
-        className="group grid grid-cols-[3.25rem_minmax(0,1fr)_auto] items-start gap-4 border-b border-line px-3 py-5 no-underline hover:bg-[#e5f0ea] focus-visible:bg-[#e5f0ea] max-md:grid-cols-[2.5rem_minmax(0,1fr)] max-md:gap-x-3 max-md:gap-y-2"
-        href={project.href}
-      >
-        <span
-          className="pt-1.5 font-mono text-xs tracking-[0.08em] text-pine-mid"
-          aria-hidden="true"
-        >
-          {String(index + 1).padStart(2, "0")}
-        </span>
-        <span className="flex flex-col gap-1.5">
-          <span className="text-[1.35rem] tracking-[-0.03em] transition-transform duration-150 group-hover:translate-x-1 group-focus-visible:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
-            {project.name}
-          </span>
-          <span className="max-w-2xl text-muted">{project.summary}</span>
-        </span>
-        <span className="flex flex-col items-end gap-1 pt-1.5 font-mono text-xs tracking-[0.08em] text-muted max-md:col-start-2 max-md:flex-row max-md:items-center max-md:justify-start max-md:gap-3 max-md:pt-0">
-          <span>{project.language}</span>
-          <span>{project.year}</span>
-        </span>
-      </ExternalLink>
+      {project.href.startsWith("/") ? (
+        <a className={className} href={project.href}>
+          {body}
+        </a>
+      ) : (
+        <ExternalLink className={className} href={project.href}>
+          {body}
+        </ExternalLink>
+      )}
     </li>
   )
 }

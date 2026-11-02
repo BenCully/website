@@ -144,6 +144,14 @@ export const posts = [
 
 export const projects = [
   {
+    name: "Used-Car Flood Watch",
+    summary:
+      "Which vehicles are likely to hit the used market as auto-loan delinquencies rise, scored from public lender and auction data, with a 12-month price forecast.",
+    language: "HTML",
+    year: "2026",
+    href: "/used-cars",
+  },
+  {
     name: "Vampire Survivors Evolution Finder",
     summary:
       "Offline search over the evolution chart: weapons, passives, evolved items, and 224 characters, with recipe previews and a zoomable chart.",

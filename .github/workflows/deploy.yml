@@ -103,10 +103,13 @@ jobs:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
         run: |
           set -euo pipefail
+          # used-cars.html is uploaded below as the key "used-cars" with must-revalidate.
+          # Leaving it in this sync would cache that copy for a year.
           aws s3 sync dist/ "s3://${S3_BUCKET}" \
             --delete \
             --cache-control "public,max-age=31536000,immutable" \
-            --exclude "html-routes.txt"
+            --exclude "html-routes.txt" \
+            --exclude "used-cars.html"
           # html-routes.txt maps a dist file to the object key CloudFront requests.
           # /blog is the key "blog", uploaded from dist/blog/index.html.
           while IFS="$(printf '\t')" read -r src key; do
