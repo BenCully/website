@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Outfit Variable", "Avenir Next", "Segoe UI", sans-serif;
+  --font-sans: "Schibsted Grotesk Variable", "Segoe UI", sans-serif;
   --font-serif: "Fraunces Variable", "Iowan Old Style", Palatino, Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
