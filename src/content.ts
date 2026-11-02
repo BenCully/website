@@ -9,6 +9,7 @@ export const site = {
   linkedin: "https://www.linkedin.com/in/benjamin-cully-3bb773147/",
   linkedinLabel: "LinkedIn",
   lede: "I write software in Chicago. I've been making things since 2007.",
+  portrait: "/portrait.jpg",
   about: [
     "The projects on this page are the public ones. Most of the software I work on stays in private repositories.",
     "GitHub is the best way to reach me. I'm open to hearing about interesting work.",

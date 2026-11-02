@@ -670,12 +670,32 @@ function About() {
       <SectionLabel index="03" id="about-heading">
         About
       </SectionLabel>
-      <div className="flex max-w-xl flex-col gap-4">
-        {site.about.map((paragraph) => (
-          <AboutParagraph key={paragraph}>{paragraph}</AboutParagraph>
-        ))}
+      <div className="grid items-start gap-6 sm:grid-cols-[10.5rem_minmax(0,36rem)] sm:gap-x-10">
+        <Portrait />
+        <div className="flex flex-col gap-4">
+          {site.about.map((paragraph) => (
+            <AboutParagraph key={paragraph}>{paragraph}</AboutParagraph>
+          ))}
+        </div>
       </div>
     </section>
+  )
+}
+
+function Portrait() {
+  const { ref, shown } = useInView<HTMLElement>()
+
+  return (
+    <figure ref={ref} className={revealClass(shown, "relative w-36 sm:w-auto")}>
+      <span className="absolute top-2.5 left-2.5 h-full w-full bg-mark" aria-hidden="true" />
+      <img
+        className="relative aspect-square w-full object-cover"
+        src={site.portrait}
+        alt="Portrait of Ben Cully"
+        width={299}
+        height={299}
+      />
+    </figure>
   )
 }
 
