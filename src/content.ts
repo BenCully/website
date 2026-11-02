@@ -20,7 +20,7 @@ export const experience = [
   {
     role: "Software Engineer",
     org: "BidFTA Online Auctions",
-    icon: "/icons/companies/bidfta.svg",
+    icon: "/icons/companies/bidfta.png",
     employment: "Full-time",
     start: "2025-01",
     end: null,
@@ -36,7 +36,7 @@ export const experience = [
   {
     role: "Software Engineer",
     org: "Adaptive Intelligence International",
-    icon: "/icons/companies/adaptive.svg",
+    icon: "/icons/companies/adaptive.png",
     employment: "Contract",
     start: "2023-10",
     end: "2025-04",
@@ -52,7 +52,7 @@ export const experience = [
   {
     role: "Full-stack Developer",
     org: "levAR",
-    icon: "/icons/companies/levar.svg",
+    icon: "/icons/companies/levar.png",
     employment: "Full-time",
     start: "2019-09",
     end: "2024-09",
@@ -100,14 +100,15 @@ export const experience = [
   {
     role: "Shop Technician",
     org: "Matrix Design, LLC",
-    icon: "/icons/companies/matrix.svg",
+    icon: "/icons/companies/matrix.png",
     employment: null,
     start: "2016-09",
     end: "2017-07",
     place: "United States",
-    summary: null,
+    summary:
+      "Built robotic cells that were deployed in automotive factories around the world. Used FANUC, Rockwell Automation, and technical drawings to bring those cells to life.",
     points: [],
-    skills: [],
+    skills: ["FANUC", "Rockwell Automation", "Industrial automation"],
   },
 ] as const
 

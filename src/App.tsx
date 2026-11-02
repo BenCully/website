@@ -392,7 +392,7 @@ function ExperienceItem({
               </h3>
             </div>
             <p className="mt-2 flex items-center gap-2.5 text-[1.05rem]">
-              <img alt="" className="size-8 shrink-0" height={32} src={role.icon} width={32} />
+              <img alt="" className="h-8 w-auto max-w-40 shrink-0 object-contain object-left" src={role.icon} />
               <span>
                 {role.org}
                 {role.employment ? <span className="text-muted"> · {role.employment}</span> : null}
