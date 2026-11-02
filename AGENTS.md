@@ -25,8 +25,8 @@ CI runs `yarn install --frozen-lockfile`, `yarn lint`, and `yarn build`. Update 
 
 ## Layout
 
-- `src/content.ts` holds the name, about copy, and project list. Change copy here before rewriting components.
-- `src/App.tsx` is the page: header, hero, work, about, contact, footer. Sections are in-page anchors (`#work`, `#about`, `#contact`). There is no router.
+- `src/content.ts` holds the name, about copy, project list, and job history. Change copy here before rewriting components.
+- `src/App.tsx` is the page: header, hero, experience, work, about, contact, footer. Sections are in-page anchors (`#experience`, `#work`, `#about`, `#contact`). There is no router.
 - `src/index.css` is the Tailwind entry. Brand colors and fonts live in the `@theme` block (`paper`, `ink`, `muted`, `line`, `pine`, `pine-mid`, `mark`).
 - `src/main.tsx` loads the self-hosted fonts, then the CSS and the app.
 - `public/` holds the favicon, `robots.txt`, and `sitemap.xml`. Those URLs use `https://bencully.com/`.

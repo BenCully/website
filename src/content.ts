@@ -13,6 +13,118 @@ export const site = {
   ],
 } as const
 
+// Roles are Ben's own record. Keep dates, employers, and tools limited to that record.
+export const experience = [
+  {
+    role: "Software Engineer",
+    org: "BidFTA Online Auctions",
+    employment: "Full-time",
+    start: "2025-01",
+    end: null,
+    place: "United States · Remote",
+    summary: null,
+    points: [
+      "Client-facing team focused on web and mobile applications in TypeScript, React, Next.js, Expo, Java, and Python.",
+      "Backend scaffolding of infrastructure with Terraform.",
+      "Managing AWS infrastructure.",
+    ],
+    skills: ["TypeScript", "React", "Next.js", "Expo", "Java", "Python", "Terraform", "AWS"],
+  },
+  {
+    role: "Software Engineer",
+    org: "Adaptive Intelligence International",
+    employment: "Contract",
+    start: "2023-10",
+    end: "2025-04",
+    place: "United States · Remote",
+    summary: null,
+    points: [
+      "Software engineer on internal specialized projects.",
+      "Developer and consultant on customer-facing projects.",
+      "Managed the cloud provider.",
+    ],
+    skills: ["AWS", "Back-end development"],
+  },
+  {
+    role: "Full-stack Developer",
+    org: "levAR",
+    employment: "Full-time",
+    start: "2019-09",
+    end: "2024-09",
+    place: "Greater Chicago Area",
+    summary:
+      "levAR is a company working in the augmented reality (AR) marketing and deployment field.",
+    points: [
+      "Designed custom web interfaces with React, Next.js, Node.js, and Go.",
+      "Custom Shopify app and integration using GraphQL, Express, and Node.js.",
+      "Set up and managed AWS infrastructure.",
+      "Wrote custom serverless APIs in Express.",
+      "Developed automated CI/CD deployment pipelines.",
+      "Set up a custom monitoring dashboard with Datadog.",
+      "Experience in static code testing and mitigation processes.",
+      "Some experience developing apps in C# and Unity.",
+    ],
+    skills: [
+      "React",
+      "Next.js",
+      "Node.js",
+      "Go",
+      "Shopify",
+      "GraphQL",
+      "Express",
+      "AWS",
+      "CI/CD",
+      "Datadog",
+      "C#",
+      "Unity",
+    ],
+  },
+  {
+    role: "IT Specialist",
+    org: "DePaul University College of Computing and Digital Media",
+    employment: null,
+    start: "2018-09",
+    end: "2019-09",
+    place: "Greater Chicago Area",
+    summary:
+      "Managed faculty and facility computer systems, built custom software packages, and deployed software remotely to Mac, Linux, and Windows. Re-designed 15-year-old Visual Basic Script code for remote install.",
+    points: [],
+    skills: ["macOS", "Linux", "Windows", "VBScript"],
+  },
+  {
+    role: "Shop Technician",
+    org: "Matrix Design, LLC",
+    employment: null,
+    start: "2016-09",
+    end: "2017-07",
+    place: "United States",
+    summary: null,
+    points: [],
+    skills: [],
+  },
+] as const
+
+export const marks = [
+  "TypeScript",
+  "React",
+  "Next.js",
+  "Expo",
+  "Terraform",
+  "AWS",
+  "Java",
+  "Python",
+  "Go",
+  "Node.js",
+  "GraphQL",
+  "Express",
+  "Shopify",
+  "Datadog",
+  "C#",
+  "Unity",
+  "CI/CD",
+  "VBScript",
+] as const
+
 export const projects = [
   {
     name: "Vampire Survivors Evolution Finder",

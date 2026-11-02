@@ -21,9 +21,7 @@
 
   body {
     min-width: 320px;
-    background:
-      linear-gradient(var(--color-mark), var(--color-mark)) left / 8px 100% no-repeat,
-      var(--color-paper);
+    background: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-size: 1.125rem;
@@ -47,9 +45,234 @@
     color: var(--color-ink);
   }
 
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    width: 8px;
+    background: var(--color-mark);
+    pointer-events: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
     }
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.05rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes swipe {
+  from {
+    transform: scaleX(0) rotate(-0.6deg);
+  }
+
+  to {
+    transform: scaleX(1) rotate(-0.6deg);
+  }
+}
+
+@keyframes grow-y {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-12px) rotate(-4deg);
+  }
+}
+
+@keyframes float-x {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes float-bar {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  50% {
+    transform: scaleY(0.82);
+  }
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body::before {
+    transform-origin: top center;
+    animation: grow-y 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .rise {
+    animation: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .mark-swipe {
+    animation: swipe 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.78s both;
+  }
+
+  .float-a {
+    animation: float-y 7.5s ease-in-out infinite;
+  }
+
+  .float-b {
+    transform-origin: center;
+    animation: float-bar 5.5s ease-in-out infinite;
+  }
+
+  .float-c {
+    animation: float-x 8s ease-in-out infinite;
+  }
+
+  .ticker-track {
+    animation: ticker 42s linear infinite;
+  }
+
+  .ticker:hover .ticker-track {
+    animation-play-state: paused;
+  }
+
+  .pulse-dot {
+    animation: pulse-dot 2.2s ease-in-out infinite;
+  }
+
+  html.motion .reveal.is-in {
+    animation: rise-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+html.motion .reveal {
+  opacity: 0;
+}
+
+.mark-swipe {
+  position: absolute;
+  z-index: -1;
+  right: -0.04em;
+  bottom: 0.05em;
+  left: -0.02em;
+  height: 0.16em;
+  background: var(--color-mark);
+  transform: scaleX(0) rotate(-0.6deg);
+  transform-origin: left center;
+}
+
+.role-name {
+  background-image: linear-gradient(var(--color-mark), var(--color-mark));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 0 0.28em;
+  transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.role:hover .role-name {
+  background-size: 100% 0.28em;
+}
+
+.link-fill {
+  box-decoration-break: clone;
+  background-image: linear-gradient(var(--color-mark), var(--color-mark));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 3px;
+  transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-box-decoration-break: clone;
+}
+
+.link-fill:hover {
+  background-size: 100% 100%;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.motion .reveal {
+    opacity: 1;
+  }
+
+  .mark-swipe {
+    transform: scaleX(1) rotate(-0.6deg);
+  }
+
+  .role-name,
+  .link-fill {
+    transition: none;
+  }
+}
+
+@media print {
+  html.motion .reveal,
+  .rise {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .mark-swipe {
+    transform: scaleX(1) rotate(-0.6deg) !important;
+  }
+
+  .ticker-track,
+  .float-a,
+  .float-b,
+  .float-c,
+  .pulse-dot,
+  body::before {
+    animation: none !important;
   }
 }
