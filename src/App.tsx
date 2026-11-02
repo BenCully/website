@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react"
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react"
+import { Link, NavLink, Route, Routes, useLocation } from "react-router"
+import { BlogIndex, BlogPost, NotFound } from "./Blog.tsx"
 import { experience, marks, projects, site } from "./content.ts"
-
-const frame =
-  "mx-auto w-[min(1080px,calc(100%-3rem))] max-md:w-[min(1080px,calc(100%-2rem))]"
+import { frame } from "./frame.ts"
+import { usePageMeta } from "./page-meta.ts"
 
 const sections = [
   ["Experience", "experience"],
@@ -10,6 +11,9 @@ const sections = [
   ["About", "about"],
   ["Contact", "contact"],
 ] as const
+
+const navLinkClass =
+  "relative inline-flex min-h-11 items-center px-3 text-[0.95rem] no-underline hover:text-mark focus-visible:outline-mark after:absolute after:bottom-2 after:left-3 after:h-0.5 after:w-[calc(100%-1.5rem)] after:origin-left after:scale-x-0 after:bg-mark after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:after:scale-x-100 motion-reduce:after:transition-none"
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -128,31 +132,60 @@ function Header() {
   return (
     <header className="border-b-4 border-mark bg-pine text-paper" id="top">
       <div className={`${frame} flex min-h-[4.75rem] flex-wrap items-center gap-x-6 gap-y-1 max-md:py-3`}>
-        <a
+        <Link
           className="font-[580] tracking-[-0.03em] text-paper no-underline hover:text-mark"
-          href="#top"
+          to="/"
         >
           {site.name}
-        </a>
+        </Link>
         <nav aria-label="Sections">
           <ul className="flex list-none gap-1 p-0 max-md:-ml-3 max-md:w-full">
             {sections.map(([label, id]) => (
               <li key={id}>
-                <a
-                  className="relative inline-flex min-h-11 items-center px-3 text-[0.95rem] no-underline hover:text-mark focus-visible:outline-mark after:absolute after:bottom-2 after:left-3 after:h-0.5 after:w-[calc(100%-1.5rem)] after:origin-left after:scale-x-0 after:bg-mark after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:after:scale-x-100 motion-reduce:after:transition-none"
-                  href={`#${id}`}
-                >
+                <Link className={navLinkClass} to={{ pathname: "/", hash: `#${id}` }}>
                   {label}
-                </a>
+                </Link>
               </li>
             ))}
+            <li>
+              <NavLink
+                className={({ isActive }) => `${navLinkClass}${isActive ? " text-mark" : ""}`}
+                to="/blog"
+              >
+                Blog
+              </NavLink>
+            </li>
           </ul>
         </nav>
-        <p className="ml-auto font-mono text-[0.78rem] tracking-[0.12em] uppercase max-md:ml-0">
+        <p className="ml-auto font-mono text-[0.78rem] tracking-[0.12em] uppercase tabular-nums whitespace-nowrap max-md:ml-0">
           {site.location}
+          <span aria-hidden="true"> · </span>
+          <ChicagoClock />
         </p>
       </div>
     </header>
+  )
+}
+
+function ChicagoClock() {
+  const [now, setNow] = useState(() => new Date())
+
+  useEffect(() => {
+    const tick = () => setNow(new Date())
+    const id = window.setInterval(tick, 1000)
+    return () => window.clearInterval(id)
+  }, [])
+
+  const time = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(now)
+
+  return (
+    <time dateTime={now.toISOString()} aria-label={`${time} Central Time`}>
+      {time}
+    </time>
   )
 }
 
@@ -171,6 +204,24 @@ function SinceYear() {
   const motion = useMotion()
   const year = Number(site.since)
   return useCount(2000, year, motion)
+}
+
+function ScrollToPlace() {
+  const { pathname, hash } = useLocation()
+
+  useLayoutEffect(() => {
+    if (hash) {
+      const id = decodeURIComponent(hash.slice(1))
+      const target = document.getElementById(id)
+      if (target) {
+        target.scrollIntoView()
+        return
+      }
+    }
+    window.scrollTo(0, 0)
+  }, [pathname, hash])
+
+  return null
 }
 
 function Hero() {
@@ -340,9 +391,12 @@ function ExperienceItem({
                 {role.role}
               </h3>
             </div>
-            <p className="mt-2 text-[1.05rem]">
-              {role.org}
-              {role.employment ? <span className="text-muted"> · {role.employment}</span> : null}
+            <p className="mt-2 flex items-center gap-2.5 text-[1.05rem]">
+              <img alt="" className="size-8 shrink-0" height={32} src={role.icon} width={32} />
+              <span>
+                {role.org}
+                {role.employment ? <span className="text-muted"> · {role.employment}</span> : null}
+              </span>
             </p>
           </div>
           <p className="font-mono text-[0.75rem] leading-relaxed text-muted md:text-right">
@@ -482,18 +536,37 @@ function AboutParagraph({ children }: { children: string }) {
 }
 
 function Contact() {
-  const { ref, shown } = useInView<HTMLParagraphElement>()
+  const { ref, shown } = useInView<HTMLDivElement>()
 
   return (
     <section className="scroll-mt-8 pt-14" id="contact" aria-labelledby="contact-heading">
       <SectionLabel index="04" id="contact-heading">
         Contact
       </SectionLabel>
-      <p ref={ref} className={revealClass(shown, "font-serif text-[clamp(1.8rem,4vw,3rem)] leading-tight tracking-[-0.04em]")}>
-        <ExternalLink className="link-fill underline decoration-mark decoration-[3px] underline-offset-[0.12em] hover:text-ink" href={site.github}>
-          {site.githubLabel}
-        </ExternalLink>
-      </p>
+      <div
+        ref={ref}
+        className={revealClass(
+          shown,
+          "flex max-w-3xl flex-col gap-3 font-serif text-[clamp(1.8rem,4vw,3rem)] leading-tight tracking-[-0.04em]",
+        )}
+      >
+        <p>
+          <ExternalLink
+            className="link-fill underline decoration-mark decoration-[3px] underline-offset-[0.12em] hover:text-ink"
+            href={site.github}
+          >
+            {site.githubLabel}
+          </ExternalLink>
+        </p>
+        <p>
+          <ExternalLink
+            className="link-fill underline decoration-mark decoration-[3px] underline-offset-[0.12em] hover:text-ink"
+            href={site.linkedin}
+          >
+            {site.linkedinLabel}
+          </ExternalLink>
+        </p>
+      </div>
     </section>
   )
 }
@@ -513,6 +586,25 @@ function Footer() {
   )
 }
 
+function HomePage() {
+  usePageMeta("Ben Cully — Software developer", "/")
+
+  return (
+    <>
+      <div className={frame}>
+        <Hero />
+      </div>
+      <Ticker />
+      <div className={frame}>
+        <Experience />
+        <Work />
+        <About />
+        <Contact />
+      </div>
+    </>
+  )
+}
+
 export default function App() {
   const reduced = useReducedMotion()
 
@@ -522,6 +614,7 @@ export default function App() {
 
   return (
     <MotionContext value={!reduced}>
+      <ScrollToPlace />
       <a
         className="absolute top-[-4rem] left-4 z-50 bg-mark px-3.5 py-2.5 text-ink no-underline focus:top-4"
         href="#content"
@@ -530,16 +623,13 @@ export default function App() {
       </a>
       <Header />
       <main id="content" className="pb-16">
-        <div className={frame}>
-          <Hero />
-        </div>
-        <Ticker />
-        <div className={frame}>
-          <Experience />
-          <Work />
-          <About />
-          <Contact />
-        </div>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/blog" element={<BlogIndex />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </main>
       <Footer />
     </MotionContext>

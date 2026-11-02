@@ -17,7 +17,7 @@ nvm use
 yarn install
 yarn dev        # http://127.0.0.1:5173
 yarn lint
-yarn build      # typecheck, Vite build, then copy dist/index.html to dist/home
+yarn build      # typecheck, Vite build, then write one HTML object per route
 yarn preview
 ```
 
@@ -25,8 +25,8 @@ CI runs `yarn install --frozen-lockfile`, `yarn lint`, and `yarn build`. Update 
 
 ## Layout
 
-- `src/content.ts` holds the name, about copy, project list, and job history. Change copy here before rewriting components.
-- `src/App.tsx` is the page: header, hero, experience, work, about, contact, footer. Sections are in-page anchors (`#experience`, `#work`, `#about`, `#contact`). There is no router.
+- `src/content.ts` holds the name, about copy, project list, job history, and blog posts. Change copy here before rewriting components.
+- `src/App.tsx` is the shell: header, routes, footer. React Router serves `/` and `/home` as the home page, `/blog` as the post list, and `/blog/:slug` as a post. Home sections are in-page anchors (`#experience`, `#work`, `#about`, `#contact`).
 - `src/index.css` is the Tailwind entry. Brand colors and fonts live in the `@theme` block (`paper`, `ink`, `muted`, `line`, `pine`, `pine-mid`, `mark`).
 - `src/main.tsx` loads the self-hosted fonts, then the CSS and the app.
 - `public/` holds the favicon, `robots.txt`, and `sitemap.xml`. Those URLs use `https://bencully.com/`.
@@ -36,7 +36,7 @@ Keep new UI on the existing type and color tokens. Prefer Tailwind utilities in 
 
 ## Content
 
-Only describe work Ben has actually published. The current projects come from his public GitHub repositories. Do not invent employers, clients, or projects. Do not add a personal email address. GitHub (https://github.com/BenCully) is the contact path.
+Only describe work Ben has actually published. The current projects come from his public GitHub repositories. Do not invent employers, clients, or projects. Do not add a personal email address. GitHub (https://github.com/BenCully) and LinkedIn (https://www.linkedin.com/in/benjamin-cully-3bb773147/) are the contact paths.
 
 ## Deploy
 
@@ -57,11 +57,11 @@ Repository variables:
 
 Never commit AWS keys or put them in workflow files. `.local.pipeline.keys` is gitignored local scratch for those values. Leave it that way.
 
-The bucket is the CloudFront origin. CloudFront uses the S3 REST endpoint, so the bucket website index and error documents do not apply. The distribution's default root object is `index.html`, which is why `/` works. `/home` is a second copy of that file uploaded as the extensionless object key `home`. The build writes it to `dist/home`, and the deploy sets its content type to `text/html`.
+The bucket is the CloudFront origin. CloudFront uses the S3 REST endpoint, so the bucket website index and error documents do not apply. The distribution's default root object is `index.html`, which is why `/` works. Every other route needs that same HTML file at the exact object key: `home`, `blog`, and `blog/<slug>`. `scripts/write-home-page.mjs` writes those copies from `src/content.ts` and lists them in `dist/html-routes.txt`. `/blog` cannot be both a file and a directory in `dist/`, so the build writes `dist/blog/index.html` and the deploy uploads it as the key `blog`. The deploy sets each of those keys to `text/html`.
 
-Hashed assets are cached for a year. `index.html`, `home`, `robots.txt`, and `sitemap.xml` are uploaded again with `must-revalidate`, then CloudFront is invalidated.
+Hashed assets are cached for a year. The HTML routes in `html-routes.txt`, plus `robots.txt` and `sitemap.xml`, are uploaded again with `must-revalidate`, then CloudFront is invalidated.
 
-`/` and `/home` render the same page. Do not add another path unless the build also emits an extensionless object for it, or CloudFront is changed to serve `index.html` for unknown paths.
+`/` and `/home` render the same page. A new post needs a `slug` in `src/content.ts`. The build emits its object. Do not add another path unless that script emits an object for it, or CloudFront is changed to serve `index.html` for unknown paths.
 
 ## Checks
 

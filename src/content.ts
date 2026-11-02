@@ -5,7 +5,9 @@ export const site = {
   since: "2007",
   url: "https://bencully.com",
   github: "https://github.com/BenCully",
-  githubLabel: "github.com/BenCully",
+  githubLabel: "GitHub",
+  linkedin: "https://www.linkedin.com/in/benjamin-cully-3bb773147/",
+  linkedinLabel: "LinkedIn",
   lede: "I write software in Chicago. I've been making things since 2007.",
   about: [
     "The projects on this page are the public ones. Most of the software I work on stays in private repositories.",
@@ -18,6 +20,7 @@ export const experience = [
   {
     role: "Software Engineer",
     org: "BidFTA Online Auctions",
+    icon: "/icons/companies/bidfta.svg",
     employment: "Full-time",
     start: "2025-01",
     end: null,
@@ -33,6 +36,7 @@ export const experience = [
   {
     role: "Software Engineer",
     org: "Adaptive Intelligence International",
+    icon: "/icons/companies/adaptive.svg",
     employment: "Contract",
     start: "2023-10",
     end: "2025-04",
@@ -48,6 +52,7 @@ export const experience = [
   {
     role: "Full-stack Developer",
     org: "levAR",
+    icon: "/icons/companies/levar.svg",
     employment: "Full-time",
     start: "2019-09",
     end: "2024-09",
@@ -82,6 +87,7 @@ export const experience = [
   {
     role: "IT Specialist",
     org: "DePaul University College of Computing and Digital Media",
+    icon: "/icons/companies/depaul.svg",
     employment: null,
     start: "2018-09",
     end: "2019-09",
@@ -94,6 +100,7 @@ export const experience = [
   {
     role: "Shop Technician",
     org: "Matrix Design, LLC",
+    icon: "/icons/companies/matrix.svg",
     employment: null,
     start: "2016-09",
     end: "2017-07",
@@ -123,6 +130,15 @@ export const marks = [
   "Unity",
   "CI/CD",
   "VBScript",
+] as const
+
+export const posts = [
+  {
+    slug: "first-post",
+    title: "First post",
+    date: "2026-11-02",
+    paragraphs: ["This is my first post. More coming soon."],
+  },
 ] as const
 
 export const projects = [

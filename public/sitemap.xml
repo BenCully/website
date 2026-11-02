@@ -3,4 +3,10 @@
   <url>
     <loc>https://bencully.com/</loc>
   </url>
+  <url>
+    <loc>https://bencully.com/blog</loc>
+  </url>
+  <url>
+    <loc>https://bencully.com/blog/first-post</loc>
+  </url>
 </urlset>

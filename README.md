@@ -50,6 +50,6 @@ The deploy user needs permission to list, put, and delete objects in that bucket
 
 The bucket is the CloudFront origin. The distribution's default root object should be `index.html`. The Route 53 record for the site should already be an alias to that distribution. After the variables are saved, re-run the failed workflow from the Actions tab.
 
-`/home` is the same page as `/`. The build copies `index.html` to `dist/home`, and the deploy uploads that file as an extensionless object so CloudFront can serve it from the S3 REST origin.
+`/home` is the same page as `/`. `/blog` is the post list, and each post is `/blog/<slug>`. The build copies `index.html` to an extensionless object for every route, and the deploy uploads those keys as HTML so CloudFront can serve them from the S3 REST origin. The `/blog` key is uploaded from `dist/blog/index.html`.
 
-Hashed assets are cached for a year. `index.html`, `home`, `robots.txt`, and `sitemap.xml` are uploaded again with `must-revalidate`, then CloudFront is invalidated.
+Hashed assets are cached for a year. HTML routes, `robots.txt`, and `sitemap.xml` are uploaded again with `must-revalidate`, then CloudFront is invalidated.
