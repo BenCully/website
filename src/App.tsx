@@ -13,7 +13,7 @@ const sections = [
 ] as const
 
 const navLinkClass =
-  "relative inline-flex min-h-11 items-center px-3 text-[0.95rem] no-underline hover:text-mark focus-visible:outline-mark after:absolute after:bottom-2 after:left-3 after:h-0.5 after:w-[calc(100%-1.5rem)] after:origin-left after:scale-x-0 after:bg-mark after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:after:scale-x-100 motion-reduce:after:transition-none"
+  "relative inline-flex min-h-11 items-center px-3 text-[0.95rem] no-underline hover:text-mark focus-visible:outline-mark after:absolute after:bottom-2 after:left-3 after:h-0.5 after:w-[calc(100%-1.5rem)] after:origin-left after:scale-x-0 after:bg-mark after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:after:scale-x-100 motion-reduce:after:transition-none max-md:px-2.5 max-md:text-[0.92rem] max-md:after:left-2.5 max-md:after:w-[calc(100%-1.25rem)]"
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -271,15 +271,15 @@ function ProjectsMenu() {
 function Header() {
   return (
     <header className="relative z-20 border-b-4 border-mark bg-pine text-paper" id="top">
-      <div className={`${frame} flex min-h-[4.75rem] flex-wrap items-center gap-x-6 gap-y-1 max-md:py-3`}>
+      <div className={`${frame} flex min-h-[4.75rem] flex-wrap items-center gap-x-6 gap-y-1 max-md:min-h-0 max-md:py-2`}>
         <Link
-          className="font-[580] tracking-[-0.03em] text-paper no-underline hover:text-mark"
+          className="font-[580] tracking-[-0.03em] text-paper no-underline hover:text-mark max-md:order-1"
           to="/"
         >
           {site.name}
         </Link>
-        <nav aria-label="Sections" className="self-stretch max-md:w-full">
-          <ul className="flex h-full list-none flex-wrap items-stretch gap-1 p-0 max-md:-ml-3">
+        <nav aria-label="Sections" className="self-stretch max-md:order-3 max-md:w-full">
+          <ul className="flex h-full list-none flex-wrap items-stretch gap-1 p-0 max-md:-ml-2.5 max-md:grid max-md:w-[calc(100%+0.625rem)] max-md:grid-cols-3 max-md:gap-0">
             {sections.map(([label, id]) => (
               <Fragment key={id}>
                 <li className="flex items-center">
@@ -300,7 +300,7 @@ function Header() {
             </li>
           </ul>
         </nav>
-        <p className="ml-auto font-mono text-[0.78rem] tracking-[0.12em] uppercase tabular-nums whitespace-nowrap max-md:ml-0">
+        <p className="ml-auto font-mono text-[0.78rem] tracking-[0.12em] uppercase tabular-nums whitespace-nowrap max-md:order-2">
           {site.location}
           <span aria-hidden="true"> · </span>
           <ChicagoClock />
